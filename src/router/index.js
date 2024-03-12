@@ -10,17 +10,17 @@ const routes = [
     {
         path: "/",
         name: "home",
-        component: () => import("../pages/RentingMachineHall.vue")
+        component: () => import("../pages/Renting.vue")
     },
     {
         path: "/plane",
         name: "plane",
-        component: () => import("../pages/RentingPlane.vue")
+        component: () => import("../pages/RentingMachineHall.vue")
     },
     {
         path: "/renting",
         name: "renting",
-        component: () => import("../pages/Renting.vue")
+        component: () => import("../pages/RentingPlane.vue")
     }
 ]
 console.log(import.meta.env.BASE_URL)

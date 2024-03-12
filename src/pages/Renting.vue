@@ -96,7 +96,7 @@ const periodsList1 = [3, 4, 5, 6, 7, 8, 9, 10, 12]?.map((el, index) => ({
 }));
 
 const { price, model, periods, payment, periods1, periodsList2 } = toRefs(state);
-
+document.title = "租金计算器 - 租机堂";
 // 计算租金
 const rent = () => {
   if (!model.value) return alert("请选择租赁方式");
