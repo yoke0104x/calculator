@@ -18,7 +18,20 @@ const state = reactive({
     list: [],
     // 首付列表
     periodsList2: [],
+    // 方案
+    plan: 0,
 });
+
+const typeOptions = [
+    {
+        label: "低息方案",
+        value: 1,
+    },
+    {
+        label: "标准方案",
+        value: 2,
+    },
+];
 
 const options = [
     {
@@ -97,66 +110,137 @@ const coefficients = [
     },
 ];
 
-const { price, model, periods, payment, periods1, periodsList2 } = toRefs(state);
+const { price, model, periods, payment, periods1, periodsList2, plan } = toRefs(state);
 document.title = "租金计算器 - 租租机";
 
 // 计算租金
 const rent = () => {
+    if (!state.plan) return alert("请选择租赁模式");
     if (!model.value) return alert("请选择租赁方式");
     if (!periods.value) return alert("请选择租赁期数");
     if (!price.value) return alert("请输入设备零售价");
 
-    // 月租模式
-    if (model.value === 1) {
-        if (!periods1.value) return alert("请选择首付期数");
-        const coefficientsFind = coefficients.find(
-            (el) => el.key === periods.value && el.key1 === periods1.value
-        )?.value;
-        const num = new Calculator().divide(price.value, coefficientsFind).getResult();
-        const num1 = new Calculator().divide(200, periods.value).getResult();
-        // 最终公式：(售价 / 系数 ) + ( 200 / 租期 )
-        const rent = new Calculator().add(num, num1).getResult();
+    // 低息方案
+    if (state.plan === 1) {
+        // 月租模式
+        if (model.value === 1) {
+            if (!periods1.value) return alert("请选择首付期数");
+            const coefficientsFind = coefficients.find(
+                (el) => el.key === periods.value && el.key1 === periods1.value
+            )?.value;
+            const num = new Calculator().divide(price.value, coefficientsFind).getResult();
+            const num1 = new Calculator().divide(200, periods.value).getResult();
+            // 最终公式：(售价 / 系数 ) + ( 200 / 租期 )
+            const rent = new Calculator().add(num, num1).getResult();
 
-        // 首付
-        // const payment = new Calculator().multiply(rent * 1, periods1.value).getResult();
+            // 首付
+            // const payment = new Calculator().multiply(rent * 1, periods1.value).getResult();
 
-        const list = [...Array(periods.value).keys()].map((el, index) => {
-            return {
-                label: "第" + (index + 1) + "期",
-                value: (rent * 1).toFixed(0),
-                time: dayjs(Date.now()).add(index, "M").format("YYYY-MM-DD"),
-            };
-        });
-        state.list = list;
-    }
-
-    // 首付模式
-    if (model.value === 2) {
-        if (!payment.value) return alert("请输入首付金额");
-        // 计算租金
-        const num = new Calculator().subtract(price.value, payment.value).getResult();
-        const num1 = new Calculator()
-            .add(1, new Calculator().multiply(periods.value, 0.04).getResult() * 1, 0.04)
-            .getResult();
-        const num2 = new Calculator().subtract(periods.value, 1).getResult();
-        // 最终公式：((售价-首付)* 1 * 4% + 4%) + 200 ) / (租期 - 1)
-        const rent = new Calculator().multiply(num, num1).add(200).divide(num2).getResult();
-        console.log(num, num1, num2);
-        const list = [...Array(periods.value).keys()].map((el, index) => {
-            if (index == 0) {
+            const list = [...Array(periods.value).keys()].map((el, index) => {
                 return {
-                    label: "首付款",
-                    value: Math.ceil(payment.value),
-                    time: dayjs(Date.now()).format("YYYY-MM-DD"),
+                    label: "第" + (index + 1) + "期",
+                    value: (rent * 1).toFixed(0),
+                    time: dayjs(Date.now()).add(index, "M").format("YYYY-MM-DD"),
                 };
-            }
-            return {
-                label: "第" + (index + 1) + "期",
-                value: (rent * 1).toFixed(0),
-                time: dayjs(Date.now()).add(index, "M").format("YYYY-MM-DD"),
-            };
-        });
-        state.list = list;
+            });
+            state.list = list;
+        }
+
+        // 首付模式
+        if (model.value === 2) {
+            if (!payment.value) return alert("请输入首付金额");
+            // 计算租金
+            const num = new Calculator().subtract(price.value, payment.value).getResult();
+            const num1 = new Calculator()
+                .add(1, new Calculator().multiply(periods.value, 0.04).getResult() * 1, 0.04)
+                .getResult();
+            const num2 = new Calculator().subtract(periods.value, 1).getResult();
+            // 最终公式：((售价-首付)* 1 * 4% + 4%) + 200 ) / (租期 - 1)
+            const rent = new Calculator().multiply(num, num1).add(200).divide(num2).getResult();
+            const list = [...Array(periods.value).keys()].map((el, index) => {
+                if (index == 0) {
+                    return {
+                        label: "首付款",
+                        value: Math.ceil(payment.value),
+                        time: dayjs(Date.now()).format("YYYY-MM-DD"),
+                    };
+                }
+                return {
+                    label: "第" + (index + 1) + "期",
+                    value: (rent * 1).toFixed(0),
+                    time: dayjs(Date.now()).add(index, "M").format("YYYY-MM-DD"),
+                };
+            });
+            state.list = list;
+        }
+    }
+    // 标准方案
+    if (state.plan === 2) {
+        // 月租模式
+        if (model.value === 1) {
+            if (!periods1.value) return alert("请选择首付期数");
+            const coefficientsFind = coefficients.find(
+                (el) => el.key === periods.value && el.key1 === periods1.value
+            )?.value;
+            const num = new Calculator().divide(price.value, coefficientsFind).getResult();
+            const num1 = new Calculator().divide(200, periods.value).getResult();
+            const num2 = new Calculator()
+                .multiply(price.value, 0.06)
+                .divide(periods.value)
+                .getResult();
+            // 最终公式：(售价 / 系数 ) + ( 200 / 租期 ) + ( 零售价 * 0.06 / 租期 )
+            const rent = new Calculator().add(num, num1, num2).getResult();
+
+            // 首付
+            // const payment = new Calculator().multiply(rent * 1, periods1.value).getResult();
+
+            const list = [...Array(periods.value).keys()].map((el, index) => {
+                return {
+                    label: "第" + (index + 1) + "期",
+                    value: (rent * 1).toFixed(0),
+                    time: dayjs(Date.now()).add(index, "M").format("YYYY-MM-DD"),
+                };
+            });
+            state.list = list;
+        }
+
+        // 首付模式
+        if (model.value === 2) {
+            if (!payment.value) return alert("请输入首付金额");
+            // 计算租金
+            const num = new Calculator().subtract(price.value, payment.value).getResult();
+            const num1 = new Calculator()
+                .add(1, new Calculator().multiply(periods.value, 0.04).getResult() * 1, 0.04)
+                .getResult();
+            const num2 = new Calculator().subtract(periods.value, 1).getResult();
+            const num3 = new Calculator()
+                .multiply(price.value, 0.06)
+                .divide(new Calculator().subtract(periods.value, 1).getResult())
+                .getResult();
+            // 最终公式：((售价-首付)* 1 * 4% + 4%) + 200 ) / ( 总期数-1 )+零售价*0.06/（总期数-1）
+
+            const rent = new Calculator()
+                .multiply(num, num1)
+                .add(200)
+                .divide(num2)
+                .add(num3)
+                .getResult();
+            const list = [...Array(periods.value).keys()].map((el, index) => {
+                if (index == 0) {
+                    return {
+                        label: "首付款",
+                        value: Math.ceil(payment.value),
+                        time: dayjs(Date.now()).format("YYYY-MM-DD"),
+                    };
+                }
+                return {
+                    label: "第" + (index + 1) + "期",
+                    value: (rent * 1).toFixed(0),
+                    time: dayjs(Date.now()).add(index, "M").format("YYYY-MM-DD"),
+                };
+            });
+            state.list = list;
+        }
     }
 };
 </script>
@@ -171,6 +255,16 @@ const rent = () => {
 
         <div class="form">
             <div class="for_title">输入设备价格,租期,押金比例!</div>
+
+            <div class="select">
+                <select class="inp inp_1" v-model="plan">
+                    <option class="inp_2" :value="0" disabled selected>请选择租赁模式</option>
+                    <option v-for="item in typeOptions" :key="item.value" :value="item.value">
+                        {{ item.label }}
+                    </option>
+                </select>
+            </div>
+
             <input class="inp number" type="number" placeholder="请输入设备零售价" v-model="price" />
 
             <div class="select">
