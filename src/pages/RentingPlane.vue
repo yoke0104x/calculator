@@ -46,7 +46,7 @@ const options = [
 
 const periodsObj = {
   12: [3, 4, 5],
-  9: [3, 4],
+  9: [2, 3, 4],
   6: [2],
 };
 
@@ -92,6 +92,11 @@ const coefficients = [
     key: 12,
     key1: 5,
     value: 10.135,
+  },
+  {
+    key: 9,
+    key1: 2,
+    value: 7.143,
   },
   {
     key: 9,
