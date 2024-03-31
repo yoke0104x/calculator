@@ -115,8 +115,9 @@ const coefficients = [
   },
 ];
 
-const { price, model, periods, payment, periods1, periodsList2, plan } = toRefs(state);
-document.title = "租金计算器 - 租租机";
+const { price, model, periods, payment, periods1, periodsList2, plan } =
+  toRefs(state);
+document.title = "租金计算器";
 
 // 计算租金
 const rent = () => {
@@ -133,7 +134,9 @@ const rent = () => {
       const coefficientsFind = coefficients.find(
         (el) => el.key === periods.value && el.key1 === periods1.value
       )?.value;
-      const num = new Calculator().divide(price.value, coefficientsFind).getResult();
+      const num = new Calculator()
+        .divide(price.value, coefficientsFind)
+        .getResult();
       const num1 = new Calculator().divide(200, periods.value).getResult();
       // 最终公式：(售价 / 系数 ) + ( 200 / 租期 )
       const rent = new Calculator().add(num, num1).getResult();
@@ -155,13 +158,23 @@ const rent = () => {
     if (model.value === 2) {
       if (!payment.value) return alert("请输入首付金额");
       // 计算租金
-      const num = new Calculator().subtract(price.value, payment.value).getResult();
+      const num = new Calculator()
+        .subtract(price.value, payment.value)
+        .getResult();
       const num1 = new Calculator()
-        .add(1, new Calculator().multiply(periods.value, 0.04).getResult() * 1, 0.04)
+        .add(
+          1,
+          new Calculator().multiply(periods.value, 0.04).getResult() * 1,
+          0.04
+        )
         .getResult();
       const num2 = new Calculator().subtract(periods.value, 1).getResult();
       // 最终公式：((售价-首付)* 1 * 4% + 4%) + 200 ) / (租期 - 1)
-      const rent = new Calculator().multiply(num, num1).add(200).divide(num2).getResult();
+      const rent = new Calculator()
+        .multiply(num, num1)
+        .add(200)
+        .divide(num2)
+        .getResult();
       const list = [...Array(periods.value).keys()].map((el, index) => {
         if (index == 0) {
           return {
@@ -187,7 +200,9 @@ const rent = () => {
       const coefficientsFind = coefficients.find(
         (el) => el.key === periods.value && el.key1 === periods1.value
       )?.value;
-      const num = new Calculator().divide(price.value, coefficientsFind).getResult();
+      const num = new Calculator()
+        .divide(price.value, coefficientsFind)
+        .getResult();
       const num1 = new Calculator().divide(200, periods.value).getResult();
       const num2 = new Calculator()
         .multiply(price.value, 0.06)
@@ -213,9 +228,15 @@ const rent = () => {
     if (model.value === 2) {
       if (!payment.value) return alert("请输入首付金额");
       // 计算租金
-      const num = new Calculator().subtract(price.value, payment.value).getResult();
+      const num = new Calculator()
+        .subtract(price.value, payment.value)
+        .getResult();
       const num1 = new Calculator()
-        .add(1, new Calculator().multiply(periods.value, 0.04).getResult() * 1, 0.04)
+        .add(
+          1,
+          new Calculator().multiply(periods.value, 0.04).getResult() * 1,
+          0.04
+        )
         .getResult();
       const num2 = new Calculator().subtract(periods.value, 1).getResult();
       const num3 = new Calculator()
@@ -254,7 +275,7 @@ const rent = () => {
   <div class="container">
     <div class="logo">
       <img src="../assets/icon.svg" alt="" />
-      <span class="title">租租机</span>
+      <!-- <span class="title">租租机</span> -->
       <b class="title_sub" @click="() => console.log(state)">租金计算器</b>
     </div>
 
@@ -263,8 +284,14 @@ const rent = () => {
 
       <div class="select">
         <select class="inp inp_1" v-model="plan">
-          <option class="inp_2" :value="0" disabled selected>请选择租赁模式</option>
-          <option v-for="item in typeOptions" :key="item.value" :value="item.value">
+          <option class="inp_2" :value="0" disabled selected>
+            请选择租赁模式
+          </option>
+          <option
+            v-for="item in typeOptions"
+            :key="item.value"
+            :value="item.value"
+          >
             {{ item.label }}
           </option>
         </select>
@@ -287,7 +314,9 @@ const rent = () => {
             }
           "
         >
-          <option class="inp_2" :value="0" disabled selected>请输入租赁方式</option>
+          <option class="inp_2" :value="0" disabled selected>
+            请输入租赁方式
+          </option>
           <option v-for="item in options" :key="item.value" :value="item.value">
             {{ item.label }}
           </option>
@@ -296,9 +325,15 @@ const rent = () => {
 
       <div class="select">
         <select class="inp inp_1" v-model="periods">
-          <option class="inp_2" :value="0" disabled selected>选择分期期数</option>
+          <option class="inp_2" :value="0" disabled selected>
+            选择分期期数
+          </option>
           <template v-if="state.model === 1">
-            <option v-for="item in periodsList" :key="item.value" :value="item.value">
+            <option
+              v-for="item in periodsList"
+              :key="item.value"
+              :value="item.value"
+            >
               {{ item.label }}
             </option>
           </template>
@@ -316,7 +351,9 @@ const rent = () => {
 
       <div class="select" v-if="state.model === 1">
         <select class="inp inp_1" v-model="periods1">
-          <option class="inp_2" :value="0" disabled selected>选择首交期数</option>
+          <option class="inp_2" :value="0" disabled selected>
+            选择首交期数
+          </option>
           <option
             v-for="item in periodsList2"
             :key="'else-' + item.value"
